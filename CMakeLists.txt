@@ -6,7 +6,9 @@ include_directories(${LIBUVDIR}/include ${LIBUVDIR}/src)
 set(SOURCES
   ${LIBUVDIR}/src/fs-poll.c
   ${LIBUVDIR}/src/inet.c
+  ${LIBUVDIR}/src/loop-watcher.c
   ${LIBUVDIR}/src/threadpool.c
+  ${LIBUVDIR}/src/timer.c
   ${LIBUVDIR}/src/uv-common.c
   ${LIBUVDIR}/src/version.c)
 
@@ -17,13 +19,13 @@ if(WIN32)
     ${LIBUVDIR}/src/win/async.c
     ${LIBUVDIR}/src/win/core.c
     ${LIBUVDIR}/src/win/dl.c
+    ${LIBUVDIR}/src/win/detect-wakeup.c
     ${LIBUVDIR}/src/win/error.c
     ${LIBUVDIR}/src/win/fs-event.c
     ${LIBUVDIR}/src/win/fs.c
     ${LIBUVDIR}/src/win/getaddrinfo.c
     ${LIBUVDIR}/src/win/getnameinfo.c
     ${LIBUVDIR}/src/win/handle.c
-    ${LIBUVDIR}/src/win/loop-watcher.c
     ${LIBUVDIR}/src/win/pipe.c
     ${LIBUVDIR}/src/win/poll.c
     ${LIBUVDIR}/src/win/process-stdio.c
@@ -33,7 +35,6 @@ if(WIN32)
     ${LIBUVDIR}/src/win/stream.c
     ${LIBUVDIR}/src/win/tcp.c
     ${LIBUVDIR}/src/win/thread.c
-    ${LIBUVDIR}/src/win/timer.c
     ${LIBUVDIR}/src/win/tty.c
     ${LIBUVDIR}/src/win/udp.c
     ${LIBUVDIR}/src/win/util.c
@@ -78,16 +79,15 @@ else()
     ${LIBUVDIR}/src/unix/fs.c
     ${LIBUVDIR}/src/unix/getaddrinfo.c
     ${LIBUVDIR}/src/unix/getnameinfo.c
-    ${LIBUVDIR}/src/unix/loop-watcher.c
     ${LIBUVDIR}/src/unix/loop.c
     ${LIBUVDIR}/src/unix/pipe.c
     ${LIBUVDIR}/src/unix/poll.c
     ${LIBUVDIR}/src/unix/process.c
+    ${LIBUVDIR}/src/unix/pthread-barrier.c
     ${LIBUVDIR}/src/unix/signal.c
     ${LIBUVDIR}/src/unix/stream.c
     ${LIBUVDIR}/src/unix/tcp.c
     ${LIBUVDIR}/src/unix/thread.c
-    ${LIBUVDIR}/src/unix/timer.c
     ${LIBUVDIR}/src/unix/tty.c
     ${LIBUVDIR}/src/unix/udp.c)
 endif()
