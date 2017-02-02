@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 2.8)
 
 set(LIBUVDIR libuv)
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
+
 include_directories(${LIBUVDIR}/include ${LIBUVDIR}/src)
 set(SOURCES
   ${LIBUVDIR}/src/fs-poll.c
@@ -92,7 +95,8 @@ else()
     ${LIBUVDIR}/src/unix/udp.c)
 endif()
 
-add_library(uv ${SOURCES})
+add_library(uv_obj OBJECT ${SOURCES})
+add_library(uv $<TARGET_OBJECTS:uv_obj>)
 
 if(WIN32)
   target_link_libraries(uv ws2_32 psapi iphlpapi shell32 userenv)
