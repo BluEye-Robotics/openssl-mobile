@@ -95,6 +95,16 @@ else()
     ${LIBUVDIR}/src/unix/udp.c)
 endif()
 
+if(UV_ANDROID)
+  set(SOURCES ${SOURCES}
+    ${LIBUVDIR}/src/unix/linux-core.c
+    ${LIBUVDIR}/src/unix/linux-inotify.c
+    ${LIBUVDIR}/src/unix/linux-syscalls.c
+    ${LIBUVDIR}/src/unix/linux-syscalls.h
+    ${LIBUVDIR}/src/unix/pthread-fixes.c
+    ${LIBUVDIR}/src/unix/android-ifaddrs.c)
+endif()
+
 add_library(uv_obj OBJECT ${SOURCES})
 add_library(uv $<TARGET_OBJECTS:uv_obj>)
 
