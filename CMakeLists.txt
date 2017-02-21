@@ -111,3 +111,9 @@ add_library(uv $<TARGET_OBJECTS:uv_obj>)
 if(WIN32)
   target_link_libraries(uv ws2_32 psapi iphlpapi shell32 userenv)
 endif()
+
+install(TARGETS uv
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin)
+
