@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 2.8)
 
 set(LIBUVDIR libuv)
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
+
 include_directories(${LIBUVDIR}/include ${LIBUVDIR}/src)
 set(SOURCES
   ${LIBUVDIR}/src/fs-poll.c
@@ -94,8 +97,25 @@ else()
     ${LIBUVDIR}/src/unix/udp.c)
 endif()
 
-add_library(uv ${SOURCES})
+if(UV_ANDROID)
+  set(SOURCES ${SOURCES}
+    ${LIBUVDIR}/src/unix/linux-core.c
+    ${LIBUVDIR}/src/unix/linux-inotify.c
+    ${LIBUVDIR}/src/unix/linux-syscalls.c
+    ${LIBUVDIR}/src/unix/linux-syscalls.h
+    ${LIBUVDIR}/src/unix/pthread-fixes.c
+    ${LIBUVDIR}/src/unix/android-ifaddrs.c)
+endif()
+
+add_library(uv_obj OBJECT ${SOURCES})
+add_library(uv $<TARGET_OBJECTS:uv_obj>)
 
 if(WIN32)
   target_link_libraries(uv ws2_32 psapi iphlpapi shell32 userenv)
 endif()
+
+install(TARGETS uv
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin)
+
