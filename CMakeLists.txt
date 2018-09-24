@@ -10,7 +10,9 @@ set(SOURCES
   ${LIBUVDIR}/src/fs-poll.c
   ${LIBUVDIR}/src/inet.c
   ${LIBUVDIR}/src/threadpool.c
+  ${LIBUVDIR}/src/timer.c
   ${LIBUVDIR}/src/uv-common.c
+  ${LIBUVDIR}/src/uv-data-getter-setters.c
   ${LIBUVDIR}/src/version.c)
 
 if(WIN32)
@@ -34,11 +36,11 @@ if(WIN32)
     ${LIBUVDIR}/src/win/process.c
     ${LIBUVDIR}/src/win/req.c
     ${LIBUVDIR}/src/win/signal.c
+    ${LIBUVDIR}/src/win/snprintf.c
     ${LIBUVDIR}/src/win/stream.c
     ${LIBUVDIR}/src/win/tcp.c
     ${LIBUVDIR}/src/win/thread.c
     ${LIBUVDIR}/src/win/tty.c
-    ${LIBUVDIR}/src/win/timer.c
     ${LIBUVDIR}/src/win/udp.c
     ${LIBUVDIR}/src/win/util.c
     ${LIBUVDIR}/src/win/winapi.c
@@ -60,12 +62,17 @@ else()
       ${LIBUVDIR}/src/unix/proctitle.c)
   elseif(${CMAKE_SYSTEM_NAME} STREQUAL "FreeBSD")
     set(SOURCES ${SOURCES}
+      ${LIBUVDIR}/src/unix/bsdifaddrs.c
       ${LIBUVDIR}/src/unix/freebsd.c)
   elseif(${CMAKE_SYSTEM_NAME} STREQUAL "OpenBSD")
     set(SOURCES ${SOURCES}
       ${LIBUVDIR}/src/unix/openbsd.c)
+  elseif(${CMAKE_SYSTEM_NAME} STREQUAL "IBM i")
+    set(SOURCES ${SOURCES}
+      ${LIBUVDIR}/src/unix/ibmi.c)
   elseif(${CMAKE_SYSTEM_NAME} STREQUAL "NetBSD")
     set(SOURCES ${SOURCES}
+      ${LIBUVDIR}/src/unix/bsdifaddrs.c
       ${LIBUVDIR}/src/unix/kqueue.c
       ${LIBUVDIR}/src/unix/netbsd.c)
   elseif(${CMAKE_SYSTEM_NAME} STREQUAL "SunOS")
@@ -87,17 +94,16 @@ else()
     ${LIBUVDIR}/src/unix/pipe.c
     ${LIBUVDIR}/src/unix/poll.c
     ${LIBUVDIR}/src/unix/process.c
-    ${LIBUVDIR}/src/unix/pthread-barrier.c
+    ${LIBUVDIR}/src/unix/pthread-fixes.c
     ${LIBUVDIR}/src/unix/signal.c
     ${LIBUVDIR}/src/unix/stream.c
     ${LIBUVDIR}/src/unix/tcp.c
     ${LIBUVDIR}/src/unix/thread.c
     ${LIBUVDIR}/src/unix/tty.c
-    ${LIBUVDIR}/src/unix/timer.c
     ${LIBUVDIR}/src/unix/udp.c)
 endif()
 
-#if(UV_ANDROID)
+if(UV_ANDROID)
   set(SOURCES ${SOURCES}
     ${LIBUVDIR}/src/unix/linux-core.c
     ${LIBUVDIR}/src/unix/linux-inotify.c
@@ -105,7 +111,7 @@ endif()
     ${LIBUVDIR}/src/unix/linux-syscalls.h
     ${LIBUVDIR}/src/unix/pthread-fixes.c
     ${LIBUVDIR}/src/unix/android-ifaddrs.c)
-#endif()
+endif()
 
 add_library(uv MODULE ${SOURCES})
 
