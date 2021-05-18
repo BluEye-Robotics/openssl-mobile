@@ -1,38 +1,9 @@
 #!/bin/bash
 
-buildLibuv() {
-  PROFILE=$1
-  OUTPUT_LIB_DIR=lib/$PROFILE
-  OPTIONAL_ANDROID_PARAMETER=""
-
-  if [ -n "$2" ]; then
-    OUTPUT_LIB_DIR=lib/$2
-  fi
-
-  if [ $PROFILE == *"android"* ]; then
-    OPTIONAL_ANDROID_PARAMETER="--build=android_ndk_installer"
-  fi
-
-  mkdir -p "$OUTPUT_LIB_DIR"
-  mkdir -p "build"
-
-  cd build
-  conan install .. --profile ../profiles/$PROFILE.profile --build=libuv $OPTIONAL_ANDROID_PARAMETER
-  cd ..
-
-  if [ ! -d "include" ]; then
-    INCLUDE_DIR=`grep -m1 'data/libuv/.*/include' build/conanbuildinfo.txt`
-    cp -r $INCLUDE_DIR "include"
-  fi
-
-  BUILT_LIB_DIR=`grep -m1 'data/libuv/.*/lib' build/conanbuildinfo.txt`
-  cp -r $BUILT_LIB_DIR/* "$OUTPUT_LIB_DIR"
-}
-
 buildiOS() {
-  buildLibuv ios-armv8
-  buildLibuv iossimulator-armv8
-  buildLibuv iossimulator-x86
+  scripts/build-library.sh ios-armv8
+  scripts/build-library.sh iossimulator-armv8
+  scripts/build-library.sh iossimulator-x86
 
   mkdir lib/iossimulator
   lipo \
@@ -49,33 +20,33 @@ buildiOS() {
 }
 
 buildAndroid() {
-  buildLibuv android-armv8 android/arm64_v8a
-  buildLibuv android-armv7 android/armeabi
-  buildLibuv android-x86 android/x86_64
+  scripts/build-library.sh android-armv8 android/arm64_v8a
+  scripts/build-library.sh android-armv7 android/armeabi
+  scripts/build-library.sh android-x86 android/x86_64
 }
 
 buildMacOS() {
-  buildLibuv macos-armv8 macos/armv8
-  buildLibuv macos-x86 macos/x86
+  scripts/build-library.sh macos-armv8 macos/armv8
+  scripts/build-library.sh macos-x86 macos/x86
 }
 
 buildLinux() {
-  buildLibuv linux-armv8 linux/armv8
-  buildLibuv linux-x86 linux/x86
+  scripts/build-library.sh linux-armv8 linux/armv8
+  scripts/build-library.sh linux-x86 linux/x86
 }
 
 set -e
 
 cd "$(dirname "$0")"
 
-rm -r lib include
+rm -rf lib include
 
 buildiOS
 buildAndroid
 buildMacOS
 buildLinux
 
-if [ $1 == "--package" ]; then
+if [[ $1 == "--package" ]]; then
   zip -r package.zip include lib
   echo "Package has been created at $(pwd)/package.zip"
 fi
