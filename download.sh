@@ -1,6 +1,6 @@
 #!/bin/bash
 
-REPO_ID="instil/libuv-cmake"
+REPO_ID="BluEye-Robotics/libuv-cmake"
 
 getReleaseDownloadUrl() {
   RELEASE="latest"
