@@ -1,6 +1,6 @@
 #!/bin/bash
 
-REPO_ID="instil/openssl-mobile"
+REPO_ID="BluEye-Robotics/openssl-mobile"
 
 getReleaseDownloadUrl() {
   RELEASE="latest"
