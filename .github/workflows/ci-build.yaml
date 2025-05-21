@@ -1,0 +1,20 @@
+name: CI build
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: Install dependencies
+        run: |
+          brew install conan
+          brew install FiloSottile/musl-cross/musl-cross
+          brew reinstall FiloSottile/musl-cross/musl-cross --with-aarch64
+
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Build library
+        run: |
+          ./build.sh --package
