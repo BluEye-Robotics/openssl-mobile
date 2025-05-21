@@ -10,8 +10,8 @@ jobs:
         run: |
           brew update
           brew install conan
-          brew install FiloSottile/musl-cross/musl-cross
-          brew reinstall FiloSottile/musl-cross/musl-cross --with-aarch64
+          brew install greatbridf/musl-cross/musl-cross
+          brew reinstall greatbridf/musl-cross/musl-cross --with-aarch64
           brew cleanup
 
       - name: Set up Conan
