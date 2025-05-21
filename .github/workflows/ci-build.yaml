@@ -8,25 +8,11 @@ jobs:
     steps:
       - name: Install dependencies
         run: |
+          brew update
           brew install conan
-
-      - name: Install musl-cross toolchains (x86_64 + aarch64)
-        run: |
-          mkdir -p $HOME/musl
-          curl -L https://musl.cc/x86_64-linux-musl-cross.tgz | tar -xz -C $HOME/musl
-          curl -L https://musl.cc/aarch64-linux-musl-cross.tgz | tar -xz -C $HOME/musl
-
-      - name: Add musl toolchains to PATH
-        run: |
-          echo "$HOME/musl/x86_64-linux-musl-cross/bin" >> $GITHUB_PATH
-          echo "$HOME/musl/aarch64-linux-musl-cross/bin" >> $GITHUB_PATH
-
-      - name: Verify toolchains
-        run: |
-          which x86_64-linux-musl-gcc
-          x86_64-linux-musl-gcc --version
-          which aarch64-linux-musl-gcc
-          aarch64-linux-musl-gcc --version
+          brew install FiloSottile/musl-cross/musl-cross
+          brew reinstall FiloSottile/musl-cross/musl-cross --with-aarch64
+          brew cleanup
 
       - name: Set up Conan
         run: |
