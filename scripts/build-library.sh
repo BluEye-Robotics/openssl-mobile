@@ -3,8 +3,6 @@
 set -e
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 BUILD_DIR=${SCRIPT_DIR}/../build
-echo "SCRIPT_DIR=$SCRIPT_DIR"
-echo "BUILD_DIR=$BUILD_DIR"
 cd ${SCRIPT_DIR}
 
 PROFILE=$1
@@ -28,17 +26,9 @@ cd ${SCRIPT_DIR}
 # Find the .pc file (libuv or libuv-static)
 PC_FILE=$(find ${BUILD_DIR} -name "libuv*.pc" | head -n1)
 
-echo "PC_FILE=$PC_FILE"
-
 prefix=$(sed -n 's|^prefix=\(.*\)|\1|p' "$PC_FILE")
 libdir=$(sed -n "s|^libdir=\${prefix}/\(.*\)|$prefix/\1|p" "$PC_FILE")
 includedir=$(sed -n "s|^includedir=\${prefix}/\(.*\)|$prefix/\1|p" "$PC_FILE")
-
-echo "prefix=$prefix"
-echo "libdir=$libdir"
-echo "includedir=$includedir"
-
-
 
 if [[ -d "$includedir" && ! -d ../include ]]; then
   echo "Copying includes from $includedir"
