@@ -7,6 +7,6 @@ compiler=gcc
 compiler.version=11.3
 compiler.libcxx=libstdc++
 
-[env]
+[buildenv]
 CC=aarch64-linux-gnu-gcc
 CXX=aarch64-linux-gnu-g++
