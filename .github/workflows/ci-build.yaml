@@ -12,14 +12,14 @@ jobs:
 
       - name: Install musl-cross toolchains (x86_64 + aarch64)
         run: |
-          mkdir -p /opt/musl
-          curl -L https://musl.cc/x86_64-linux-musl-cross.tgz | tar -xz -C /opt/musl
-          curl -L https://musl.cc/aarch64-linux-musl-cross.tgz | tar -xz -C /opt/musl
+          mkdir -p $HOME/musl
+          curl -L https://musl.cc/x86_64-linux-musl-cross.tgz | tar -xz -C $HOME/musl
+          curl -L https://musl.cc/aarch64-linux-musl-cross.tgz | tar -xz -C $HOME/musl
 
       - name: Add musl toolchains to PATH
         run: |
-          echo "/opt/musl/x86_64-linux-musl-cross/bin" >> $GITHUB_PATH
-          echo "/opt/musl/aarch64-linux-musl-cross/bin" >> $GITHUB_PATH
+          echo "$HOME/musl/x86_64-linux-musl-cross/bin" >> $GITHUB_PATH
+          echo "$HOME/musl/aarch64-linux-musl-cross/bin" >> $GITHUB_PATH
 
       - name: Verify toolchains
         run: |
