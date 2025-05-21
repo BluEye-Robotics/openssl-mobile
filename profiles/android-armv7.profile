@@ -7,4 +7,4 @@ arch=armv7
 compiler.version=14
 
 [tool_requires]
-*: android-ndk/r24
+*: android-ndk/r27c
