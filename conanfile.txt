@@ -1,5 +1,5 @@
 [requires]
-libuv/1.38.1
+libuv/1.49.2
 
 [generators]
 CMakeDeps

@@ -7,13 +7,13 @@ buildiOS() {
 
   mkdir lib/iossimulator
   lipo \
-   	lib/iossimulator-armv8/libuv_a.a \
-   	lib/iossimulator-x86/libuv_a.a \
-   	-create -output lib/iossimulator/libuv_a.a \
+   	lib/iossimulator-armv8/libuv.a \
+   	lib/iossimulator-x86/libuv.a \
+   	-create -output lib/iossimulator/libuv.a \
 
   xcodebuild -create-xcframework \
-    -library lib/ios-armv8/libuv_a.a \
-    -library lib/iossimulator/libuv_a.a \
+    -library lib/ios-armv8/libuv.a \
+    -library lib/iossimulator/libuv.a \
   	-output lib/ios/libuv.xcframework
 
   rm -r lib/ios-armv8 lib/iossimulator-armv8 lib/iossimulator-x86 lib/iossimulator
@@ -31,9 +31,9 @@ buildMacOS() {
   scripts/build-library.sh macos-x86 macos/x86
 
   lipo \
-    lib/macos/armv8/libuv_a.a \
-    lib/macos/x86/libuv_a.a \
-    -create -output lib/macos/libuv_a.a
+    lib/macos/armv8/libuv.a \
+    lib/macos/x86/libuv.a \
+    -create -output lib/macos/libuv.a
 
   rm -rf lib/macos/armv8 lib/macos/x86
 }
