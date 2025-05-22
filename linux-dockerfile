@@ -4,6 +4,7 @@ ENV TZ Europe/Oslo
 
 RUN apt-get update && apt-get install --no-install-recommends -y \
     make \
+    cmake \
     build-essential \
     perl \
     python3-pip \
