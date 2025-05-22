@@ -1,16 +1,21 @@
-# This is based on the Cloudbees JNLP slave
-# https://github.com/cloudbees/jnlp-slave-with-java-build-tools-dockerfile/blob/master/Dockerfile
+FROM ubuntu:24.04
 
-FROM ubuntu:20.04
-MAINTAINER Instil <team@instil.co>
+ENV TZ Europe/Oslo
 
-ENV TZ Europe/London
+RUN apt-get update && apt-get install --no-install-recommends -y \
+    make \
+    build-essential \
+    perl \
+    python3-pip \
+    gcc-aarch64-linux-gnu \
+    gcc-x86-64-linux-gnu \
+    binutils-aarch64-linux-gnu \
+    binutils-x86-64-linux-gnu \
+    libc6-dev-amd64-cross \
+    && rm -rf /var/lib/apt/lists/
 
-RUN apt update && \
-    apt -y upgrade
+RUN pip install conan --break-system-packages
 
-RUN apt -y install python3-pip gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu gcc-x86-64-linux-gnu binutils-x86-64-linux-gnu
-
-RUN pip install conan
+RUN conan profile detect
 
 COPY . openssl-mobile
