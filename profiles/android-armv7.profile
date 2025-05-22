@@ -2,7 +2,7 @@ include(default)
 
 [settings]
 os=Android
-os.api_level=21
+os.api_level=26
 arch=armv7
 compiler=gcc
 compiler.libcxx=libstdc++11
