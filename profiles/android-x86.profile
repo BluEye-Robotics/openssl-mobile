@@ -6,5 +6,5 @@ os.api_level=21
 arch=x86
 compiler.version=14
 
-[build_requires]
-*: android-ndk/r24
+[tool_requires]
+*: android-ndk/r27c

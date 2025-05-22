@@ -1,33 +1,47 @@
 #!/bin/bash
 
 set -e
-cd "$(dirname "$0")"
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+BUILD_DIR=${SCRIPT_DIR}/../build
+cd ${SCRIPT_DIR}
 
 PROFILE=$1
 OUTPUT_LIB_DIR=../lib/$PROFILE
-PROFILE_PARAMS="--profile ../../profiles/$PROFILE.profile"
+PROFILE_PARAMS="--profile ../profiles/$PROFILE.profile"
 
 if [[ -n "$2" ]]; then
   OUTPUT_LIB_DIR=../lib/$2
 fi
 
 if [[ "$PROFILE" == *"android"* ]]; then
-  PROFILE_PARAMS="--profile:host ../../profiles/$PROFILE.profile --profile:build default"
+  PROFILE_PARAMS="--profile:host ../profiles/$PROFILE.profile --profile:build default"
 fi
 
-mkdir -p "$OUTPUT_LIB_DIR"
-mkdir -p "build"
+mkdir -p ${OUTPUT_LIB_DIR}
+mkdir -p ${BUILD_DIR}
+cd ${BUILD_DIR}
+conan install .. $PROFILE_PARAMS --build=missing
+cd ${SCRIPT_DIR}
 
-cd build
-conan install ../.. $PROFILE_PARAMS --build=missing
-cd ..
+# Find the .pc file (libuv or libuv-static)
+PC_FILE=$(find ${BUILD_DIR} -name "libuv*.pc" | head -n1)
 
-if [[ ! -d "../include" ]]; then
-  INCLUDE_DIR=`grep -m1 'data/libuv/.*/include' build/conanbuildinfo.txt`
-  cp -r $INCLUDE_DIR "../include"
+prefix=$(sed -n 's|^prefix=\(.*\)|\1|p' "$PC_FILE")
+libdir=$(sed -n "s|^libdir=\${prefix}/\(.*\)|$prefix/\1|p" "$PC_FILE")
+includedir=$(sed -n "s|^includedir=\${prefix}/\(.*\)|$prefix/\1|p" "$PC_FILE")
+
+if [[ -d "$includedir" && ! -d ../include ]]; then
+  echo "Copying includes from $includedir"
+  cp -r "$includedir" ../include
 fi
 
-BUILT_LIB_DIR=`grep -m1 'data/libuv/.*/lib' build/conanbuildinfo.txt`
-cp -r $BUILT_LIB_DIR/* "$OUTPUT_LIB_DIR"
+if [[ -d "$libdir" ]]; then
+  echo "Copying libs from $libdir to $OUTPUT_LIB_DIR"
+  cp -r "$libdir"/* "$OUTPUT_LIB_DIR"
+else
+  echo "Library directory not found in $libdir"
+  exit 1
+fi
 
-rm -r build
+# Clean up
+rm -rf ${BUILD_DIR}

@@ -4,3 +4,7 @@ libuv/1.38.1
 [generators]
 CMakeDeps
 CMakeToolchain
+PkgConfigDeps
+
+[layout]
+cmake_layout

@@ -1,0 +1,33 @@
+name: CI build
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: macos-15
+    steps:
+      - name: Install dependencies
+        run: |
+          brew update
+          brew install conan
+          brew install greatbridf/musl-cross/musl-cross
+          brew cleanup
+
+      - name: Set up Conan
+        run: |
+          conan profile detect
+
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Build library
+        run: |
+          ./build.sh --package
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: package
+          path: |
+            include
+            lib
