@@ -43,5 +43,15 @@ else
   exit 1
 fi
 
+# Rename all libuv_a.a to libuv.a
+# Older versions of libuv used libuv_a.a. This makes the script compatible with both
+# and dependent apps can use the new name.
+for file in "$OUTPUT_LIB_DIR"/libuv_a.a; do
+  if [[ -f "$file" ]]; then
+    mv "$file" "${file/_a/}"
+  fi
+done
+find "$OUTPUT_LIB_DIR" -type f -name "*.cmake" -exec sed -i '' 's/uv_a/uv/g' {} +
+
 # Clean up
 rm -rf ${BUILD_DIR}
