@@ -1,5 +1,5 @@
 [requires]
-openssl/3.4.1
+openssl/3.5.2
 
 [generators]
 CMakeDeps
