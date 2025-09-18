@@ -9,4 +9,4 @@ compiler.libcxx=libstdc++11
 compiler.version=9
 
 [tool_requires]
-*: android-ndk/r27c
+*: android-ndk/r8c
