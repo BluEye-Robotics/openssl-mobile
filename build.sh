@@ -73,12 +73,13 @@ buildLinuxLibraries() {
 buildWindows() {
   scripts/build-library.sh windows-x64 windows/x64
 
-  # Normalize library names: Conan/MSVC may produce libssl.lib/libcrypto.lib
+  # Normalize library names: Conan/MSVC produces libssl.lib/libcrypto.lib
   # but CMake links with 'ssl' and 'crypto' which expects ssl.lib/crypto.lib.
   for dir in lib/windows/*/; do
-    for lib in "$dir"/libssl.lib "$dir"/libcrypto.lib; do
-      if [[ -f "$lib" ]]; then
-        mv "$lib" "${lib/lib/}"
+    for file in "$dir"/libssl.lib "$dir"/libcrypto.lib; do
+      if [[ -f "$file" ]]; then
+        local base=$(basename "$file")
+        mv "$file" "$dir/${base#lib}"
       fi
     done
   done
@@ -87,18 +88,39 @@ buildWindows() {
 set -e
 cd "$(dirname "$0")"
 
-rm -rf lib include
+# Parse arguments: platform names and --package flag
+PLATFORMS=()
+PACKAGE=false
+for arg in "$@"; do
+  case "$arg" in
+    --package) PACKAGE=true ;;
+    *) PLATFORMS+=("$arg") ;;
+  esac
+done
 
-if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" || "$OS" == "Windows_NT" ]]; then
-  buildWindows
-else
-  buildiOS
-  buildAndroid
-  buildMacOS
-  buildLinux
+# If no platforms specified, auto-detect based on OS
+if [[ ${#PLATFORMS[@]} -eq 0 ]]; then
+  if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" || "$OS" == "Windows_NT" ]]; then
+    PLATFORMS=(windows)
+  else
+    PLATFORMS=(ios android macos linux)
+  fi
 fi
 
-if [[ $1 == "--package" ]]; then
+rm -rf lib include
+
+for platform in "${PLATFORMS[@]}"; do
+  case "$platform" in
+    ios) buildiOS ;;
+    android) buildAndroid ;;
+    macos) buildMacOS ;;
+    linux) buildLinux ;;
+    windows) buildWindows ;;
+    *) echo "Unknown platform: $platform"; exit 1 ;;
+  esac
+done
+
+if $PACKAGE; then
   zip -r package.zip include lib
   echo "Package has been created at $(pwd)/package.zip"
 fi

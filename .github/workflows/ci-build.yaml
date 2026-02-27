@@ -1,0 +1,130 @@
+name: CI build
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+
+jobs:
+  build-apple-android:
+    runs-on: macos-15
+    steps:
+      - name: Install dependencies
+        run: |
+          brew update
+          brew install conan
+          brew cleanup
+
+      - name: Set up Conan
+        run: |
+          conan profile detect
+
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Build iOS, Android, macOS
+        run: |
+          ./build.sh ios android macos
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: package-apple-android
+          path: |
+            include
+            lib
+
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Build Linux (Docker)
+        run: |
+          ./build.sh linux
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: package-linux
+          path: |
+            lib
+
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Install Conan
+        run: pip install conan
+
+      - name: Set up Conan
+        run: conan profile detect
+
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Build Windows
+        shell: bash
+        run: |
+          ./build.sh windows
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: package-windows
+          path: |
+            lib
+
+  package:
+    needs: [build-apple-android, build-linux, build-windows]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Apple/Android artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: package-apple-android
+          path: output
+
+      - name: Download Linux artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: package-linux
+          path: output
+
+      - name: Download Windows artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: package-windows
+          path: output
+
+      - name: Create combined package
+        run: |
+          cd output
+          zip -r ../package.zip include lib
+
+      - name: Upload combined package
+        uses: actions/upload-artifact@v4
+        with:
+          name: package
+          path: package.zip
+
+  release:
+    needs: [package]
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download package
+        uses: actions/download-artifact@v4
+        with:
+          name: package
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${{ github.ref_name }}" package.zip \
+            --repo "${{ github.repository }}" \
+            --title "${{ github.ref_name }}" \
+            --generate-notes
