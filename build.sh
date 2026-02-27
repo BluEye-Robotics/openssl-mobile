@@ -70,15 +70,33 @@ buildLinuxLibraries() {
   docker rm openssl
 }
 
+buildWindows() {
+  scripts/build-library.sh windows-x64 windows/x64
+
+  # Normalize library names: Conan/MSVC may produce libssl.lib/libcrypto.lib
+  # but CMake links with 'ssl' and 'crypto' which expects ssl.lib/crypto.lib.
+  for dir in lib/windows/*/; do
+    for lib in "$dir"/libssl.lib "$dir"/libcrypto.lib; do
+      if [[ -f "$lib" ]]; then
+        mv "$lib" "${lib/lib/}"
+      fi
+    done
+  done
+}
+
 set -e
 cd "$(dirname "$0")"
 
 rm -rf lib include
 
-buildiOS
-buildAndroid
-buildMacOS
-buildLinux
+if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" || "$OS" == "Windows_NT" ]]; then
+  buildWindows
+else
+  buildiOS
+  buildAndroid
+  buildMacOS
+  buildLinux
+fi
 
 if [[ $1 == "--package" ]]; then
   zip -r package.zip include lib
