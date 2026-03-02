@@ -13,6 +13,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
     binutils-aarch64-linux-gnu \
     binutils-x86-64-linux-gnu \
     libc6-dev-amd64-cross \
+    libc6-dev-arm64-cross \
     && rm -rf /var/lib/apt/lists/
 
 RUN pip install conan --break-system-packages
