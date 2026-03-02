@@ -89,13 +89,13 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: package-linux
-          path: output
+          path: output/lib
 
       - name: Download Windows artifacts
         uses: actions/download-artifact@v4
         with:
           name: package-windows
-          path: output
+          path: output/lib
 
       - name: Create combined package
         run: |
