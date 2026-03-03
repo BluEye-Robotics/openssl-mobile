@@ -63,6 +63,19 @@ jobs:
       - name: Checkout source
         uses: actions/checkout@v4
 
+      - name: Add clang-cl to PATH
+        shell: bash
+        run: |
+          # OpenSSL ARM64 target (VC-WIN64-CLANGASM-ARM) requires clang-cl for assembly.
+          # It is installed as a VS component but not on PATH by default in bash.
+          CLANG_DIR=$(find "/c/Program Files/Microsoft Visual Studio" -name "clang-cl.exe" -path "*/Hostx64/*" -print -quit 2>/dev/null | xargs dirname)
+          if [[ -n "$CLANG_DIR" ]]; then
+            echo "Found clang-cl at: $CLANG_DIR"
+            echo "$CLANG_DIR" >> "$GITHUB_PATH"
+          else
+            echo "::warning::clang-cl not found — ARM64 OpenSSL build may fail"
+          fi
+
       - name: Build Windows
         shell: bash
         run: |

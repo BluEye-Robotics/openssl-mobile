@@ -72,6 +72,7 @@ buildLinuxLibraries() {
 
 buildWindows() {
   scripts/build-library.sh windows-x64 windows/x64
+  scripts/build-library.sh windows-arm64 windows/arm64
 
   # Normalize library names: Conan/MSVC produces libssl.lib/libcrypto.lib
   # but CMake links with 'ssl' and 'crypto' which expects ssl.lib/crypto.lib.
