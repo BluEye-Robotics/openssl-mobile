@@ -67,9 +67,10 @@ jobs:
         shell: bash
         run: |
           # OpenSSL ARM64 target (VC-WIN64-CLANGASM-ARM) requires clang-cl for assembly.
-          # It is installed as a VS component but not on PATH by default in bash.
-          CLANG_DIR=$(find "/c/Program Files/Microsoft Visual Studio" -name "clang-cl.exe" -path "*/Hostx64/*" -print -quit 2>/dev/null | xargs dirname)
-          if [[ -n "$CLANG_DIR" ]]; then
+          # It is installed as a VS component (VC/Tools/Llvm) but not on PATH by default.
+          CLANG_CL=$(find "/c/Program Files/Microsoft Visual Studio" -name "clang-cl.exe" -path "*/Llvm/x64/bin/*" -print -quit 2>/dev/null || true)
+          if [[ -n "$CLANG_CL" ]]; then
+            CLANG_DIR=$(dirname "$CLANG_CL")
             echo "Found clang-cl at: $CLANG_DIR"
             echo "$CLANG_DIR" >> "$GITHUB_PATH"
           else
