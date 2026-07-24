@@ -55,7 +55,10 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Install Conan
-        run: pip install conan
+        # Pinned: conan >= 2.31 changed replace_in_file to raise on no-op
+        # replacements, which breaks the conan-center openssl recipe's MSVC
+        # runtime-flag rewrite (search == replace when runtime is already MT).
+        run: pip install conan==2.20.1
 
       - name: Set up Conan
         run: conan profile detect
