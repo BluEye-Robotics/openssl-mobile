@@ -55,13 +55,13 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Install Conan
-        # Pinned below 2.31: conan >= 2.31 changed replace_in_file to raise on
-        # no-op replacements, which breaks the conan-center openssl recipe's
-        # MSVC runtime-flag rewrite (conan-io/conan#20212). Kept >= 2.30 so
-        # 'conan profile detect' still prefers MSVC over the MinGW gcc on the
-        # runner's PATH (older versions detect gcc and the profiles then fail
-        # with "settings.compiler.runtime doesn't exist for gcc").
-        run: pip install 'conan>=2.30,<2.31'
+        # 2.31.0 (and only 2.31.0) breaks the conan-center openssl recipe's
+        # MSVC runtime-flag rewrite: its replace_in_file raised on no-op
+        # replacements (conan-io/conan#20212, reverted in 2.31.1). The >= 2.30
+        # floor keeps 'conan profile detect' preferring MSVC over the MinGW gcc
+        # on the runner's PATH (older versions detect gcc and the profiles then
+        # fail with "settings.compiler.runtime doesn't exist for gcc").
+        run: pip install 'conan>=2.30,!=2.31.0'
 
       - name: Set up Conan
         run: conan profile detect
