@@ -3,12 +3,20 @@
 This repo provides scripts to build OpenSSL via Conan, package them for the appropriate platforms and provide cmake scripts for simple integration. Currently, the scripts support the following platforms.
 
 * iOS 11+
-* Android 5.0+
+* Android 9.0+ (API 28)
 * macOS x86 & arm64
 * Linux x86 & arm64
 * Windows x64
 
 ## Building From Source
+
+Android builds use NDK r30 (Clang 21), with API 28 as the minimum for all four
+ABIs. Until Conan Center publishes r30, the build exports the checksum-pinned
+upstream recipe in `recipes/android-ndk` as `android-ndk/r30@blueye/stable`.
+
+`download.sh` uses the checkout's exact release tag, or `v3.5.9-1` for an untagged
+checkout. It fails without replacing existing libraries if that release is not
+yet available; build from source until the matching binaries are published.
 
 ### Prerequisites (macOS)
 
